@@ -21,10 +21,7 @@ import Button from "../components/common/Button";
 const UserCreate: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-
-    const users = useSelector((state: RootState) => state.users.users);
     const loading = useSelector((state: RootState) => state.users.loading);
-
     const [form, setForm] = useState({
         name: "",
         email: "",
