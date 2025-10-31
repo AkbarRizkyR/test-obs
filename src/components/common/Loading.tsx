@@ -1,20 +1,23 @@
-// components/common/Loading.jsx
 import { Box, CircularProgress, Typography } from "@mui/material";
 
-const Loading = ({ message = "Memuat data..." }) => {
+interface LoadingProps {
+    message?: string;
+}
+
+const Loading: React.FC<LoadingProps> = ({ message = "Loading..." }) => {
     return (
         <Box
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "center",
                 alignItems: "center",
+                justifyContent: "center",
                 height: "80vh",
-                gap: 2,
+                textAlign: "center",
             }}
         >
-            <CircularProgress />
-            <Typography variant="body2" color="text.secondary">
+            <CircularProgress size={60} thickness={5} />
+            <Typography variant="h6" sx={{ mt: 2 }}>
                 {message}
             </Typography>
         </Box>

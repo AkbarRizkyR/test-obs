@@ -1,7 +1,6 @@
 import React from "react";
 import { TextField, InputAdornment } from "@mui/material";
-import { SearchOffOutlined } from "@mui/icons-material";
-
+import SearchIcon from '@mui/icons-material/Search';
 interface SearchInputProps {
     value: string;
     onChange: (value: string) => void; // ✅ ubah jadi string
@@ -19,7 +18,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ value, onChange, placeholder 
             InputProps={{
                 startAdornment: (
                     <InputAdornment position="start">
-                        <SearchOffOutlined />
+                        <SearchIcon />
                     </InputAdornment>
                 ),
             }}
