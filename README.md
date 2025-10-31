@@ -1,73 +1,70 @@
-# React + TypeScript + Vite
+# test-obs — React + TypeScript + Vite (Ringkasan & Panduan)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Repository ini adalah aplikasi CRUD pengguna sederhana berbasis React + TypeScript + Vite, menggunakan Material-UI, Redux Toolkit + redux-persist, dan beberapa utilitas seperti axios & sweetalert2.
 
-Currently, two official plugins are available:
+Ringkasan cepat:
+- Router disediakan di [src/App.tsx](src/App.tsx).
+- State global dikelola oleh [`store`](src/store/index.ts) dengan reducer pengguna di [`userSlice`](src/store/userSlice.ts) (fungsi penting: [`fetchUsers`](src/store/userSlice.ts), [`addUserAsync`](src/store/userSlice.ts), [`editUser`](src/store/userSlice.ts), [`deleteUser`](src/store/userSlice.ts)).
+- Hook helper: [`useFetchUsers`](src/hooks/useFetchUsers.ts).
+- Komponen utama: layout di [src/components/layout/MainLayout.tsx](src/components/layout/MainLayout.tsx) dan [src/components/layout/Navbar.tsx](src/components/layout/Navbar.tsx).
+- Komponen UI umum: [`UserModal`](src/components/common/UserModal.tsx), [`TextInput`](src/components/common/TextInput.tsx), [`Search`](src/components/common/Search.tsx), [`Button`](src/components/common/Button.tsx), [`Loading`](src/components/common/Loading.tsx).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Persyaratan
+- Node.js 18+ direkomendasikan.
+- Paket dikelola melalui package.json — lihat [package.json](package.json).
 
-## React Compiler
+Instalasi
+1. Install dependensi:
+   npm install
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+Perintah umum (dari package.json)
+- npm run dev — jalankan dev server (Vite)
+- npm run build — compile & build produksi (tsc -b lalu vite build)
+- npm run preview — preview build
+- npm run lint — jalankan ESLint
+- npm run test — jalankan Vitest (unit test)
+- npm run test:run — jalankan test sekali
+- npm run test:coverage — jalankan test dengan coverage
 
-## Expanding the ESLint configuration
+Konfigurasi & file penting
+- Vite konfigurasi: [vite.config.ts](vite.config.ts)
+- TypeScript configs: [tsconfig.app.json](tsconfig.app.json), [tsconfig.node.json](tsconfig.node.json), [tsconfig.json](tsconfig.json)
+- Test setup: [src/setupTest.js](src/setupTest.js)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Arsitektur & alur penggunaan
+- Routing:
+  - "/" → [src/pages/UserList.tsx](src/pages/UserList.tsx)
+  - "/create" → [src/pages/UserCreate.tsx](src/pages/UserCreate.tsx)
+  - "/edit/:id" → [src/pages/UserEdit.tsx](src/pages/UserEdit.tsx)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Mengambil data:
+  - Otomatis melalui [`fetchUsers`](src/store/userSlice.ts) yang memanggil API https://jsonplaceholder.typicode.com/users. Anda juga bisa memanggilnya langsung lewat dispatch:
+    dispatch([`fetchUsers`](src/store/userSlice.ts)())
+  - Atau gunakan hook [`useFetchUsers`](src/hooks/useFetchUsers.ts) untuk komponen fungsional.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Menambah/menyimpan pengguna:
+  - Asynchronous: dispatch([`addUserAsync`](src/store/userSlice.ts)(userData)). Fungsi ini mem-post ke API lalu menambahkan ke state lokal.
+  - Synchronous lokal: dispatch([`addUser`](src/store/userSlice.ts)(payload)).
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Edit / delete:
+  - Edit lokal via dispatch([`editUser`](src/store/userSlice.ts)(userObject))
+  - Hapus via dispatch([`deleteUser`](src/store/userSlice.ts)(id))
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+State & tipenya
+- Lihat helper type di [`store`](src/store/index.ts): [`RootState`](src/store/index.ts) dan [`AppDispatch`](src/store/index.ts), serta hook helper [`useAppDispatch`](src/store/index.ts).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Testing
+- Test unit ada di folder komponen (contoh: [src/components/common/Button.test.jsx](src/components/common/Button.test.jsx), [src/components/common/UserModal.test.jsx](src/components/common/UserModal.test.jsx), dll).
+- Setup test: [src/setupTest.js](src/setupTest.js)
+- Jalankan: npm run test atau npm run test:run
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Catatan tambahan
+- redux-persist menyimpan state di localStorage (konfigurasi di [`store`](src/store/index.ts)).
+- Gambar user dibuat dari `https://picsum.photos/seed/{id}/200` pada [`userSlice`](src/store/userSlice.ts).
+- UI berbasis Material-UI v7 — lihat komponen yang menggunakan MUI di folder [src/components](src/components).
+
+Kontribusi & pengembangan
+- Tambahkan fitur atau perbaiki bug, lalu jalankan test dan lint.
+- Untuk strict linting type-aware, lihat saran di [eslint.config.js](eslint.config.js) dan README internal di file itu.
+
+Jika butuh contoh pemakaian dispatch atau integrasi komponen tertentu sebutkan file/komponen yang ingin di-demonstrasi (mis. [`UserList`](src/pages/UserList.tsx) atau [`useFetchUsers`](src/hooks/useFetchUsers.ts)).
